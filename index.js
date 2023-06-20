@@ -19,7 +19,6 @@ conn.connect((err) => {
       console.error('Error connecting to MySQL database:', err);
       return;
     }
-    console.log('Connected to MySQL database!');
   });
 
 app.use(cors());
@@ -30,7 +29,6 @@ app.get('/listEmployees', (req, res) => {
           console.error('Error executing query:', err);
           return;
         }
-        console.log('Query results:', results);
         res.send(results)
       });
 });
@@ -44,7 +42,6 @@ app.delete('/delEmployee/:id', (req, res) => {
         return res.status(500).send('Error deleting employee');
       }
       
-      console.log('Employee deleted:', results);
       res.send("Employee's records deleted successfully");
     }); 
   });
@@ -55,10 +52,9 @@ app.delete('/delEmployee/:id', (req, res) => {
     conn.query('INSERT INTO Employee (nom_employee, salaire_employee) VALUES (?,?)', [name,salaire], (err, results) => {
       if (err) {
         console.error('Error executing query:', err);
-        return res.status(500).send('Error inserting employee');
+        return res.send('Error inserting employee');
       }
       
-      console.log('Employee inserted:', results);
       res.send("Employee's records inserted successfully");
     });
   });
@@ -69,10 +65,9 @@ app.delete('/delEmployee/:id', (req, res) => {
     conn.query('UPDATE Employee SET nom_employee = ?, salaire_employee = ? WHERE id_employee = ?', [newName, newSalaire, id], (err, results) => {
         if (err) {
           console.error('Error executing query:', err);
-          return res.status(500).send('Error updating employee');
+          return res.send('Error updating employee');
         }
         
-        console.log('Employee updated:', results);
         res.send("Employee's records modified successfully");
       });
       
@@ -85,7 +80,6 @@ app.delete('/delEmployee/:id', (req, res) => {
           console.error('Error executing query:', err);
           return;
         }
-        console.log('Query results:', results);
         res.send(results)
       });
 });
@@ -96,7 +90,6 @@ app.get('/getSalaire', (req, res) => {
         console.error('Error executing query:', err);
         return;
       }
-      console.log('Query results:', results);
       res.send(results)
     });
 });

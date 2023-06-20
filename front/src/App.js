@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.css';
-import { TextField, Button, Dialog, DialogContent } from '@mui/material';
+import { TextField, Button, Dialog, DialogContent, Typography } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SearchIcon from '@mui/icons-material/Search';
+import { startCase } from 'lodash';
 
 function App() {
   const [message, setMessage] = useState([]);
@@ -25,16 +26,17 @@ function App() {
   const deleteE = async (id) => {
 
     const response = await axios.delete(`http://localhost:5000/delEmployee/${id}`);
-    toast.info(response.data);
+    toast.info(response.data, {autoClose: 1500});
     listE()
 
   }
 
   const insertE = async () => {
     const response = await axios.post("http://localhost:5000/inEmployee", employeeInfo);
-    toast.info(response.data);
+    toast.info(response.data, {autoClose: 1500});
     listE()
     setAdd(false)
+    setEmployeeInfo('')
   }
 
   const modifyE = async () => {
@@ -44,7 +46,7 @@ function App() {
       id: id
     }
     const response = await axios.post("http://localhost:5000/modEmployee", newInfo);
-    toast.info(response.data);
+    toast.info(response.data, {autoClose: 1500});
     listE()
     setMod(false)
 
@@ -123,11 +125,32 @@ function App() {
     handleSearch(value);
   }
 
+  const [confirmDel, setConfirmDel] = useState(false)
+  const [idDel, setIdDel] = useState('')
+
   return (
     <>
 
-      <Dialog size="md" open={add} onClose={() => setAdd(false)}>
+      <Dialog size="md" open={confirmDel} onClose={() => setConfirmDel(false)}>
         <DialogContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '10px', justifyContent: 'space-around' }}>
+          <Typography>
+            Do you want to delete this employee's records?
+          </Typography>
+          <div>
+            <Button style={{ margin: '10px' }} color='success' variant="outlined" onClick={() => {deleteE(idDel);setConfirmDel(false)}}>
+              Yes
+            </Button>
+            <Button style={{ margin: '10px' }} variant="contained" color="error" onClick={() => setConfirmDel(false)}>
+              No
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog size="md" open={add} onClose={() => setAdd(false)}>
+        
+        <DialogContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '10px', justifyContent: 'space-around' }}>
+          <h4 style={{textAlign:'center', marginBottom:'15px'}}>Add employee</h4>
           <TextField style={{ marginBottom: '15px' }} size='small' label="Name" type='text' name="name" value={employeeInfo.name} onChange={handleChange} />
           <TextField style={{ marginBottom: '15px' }} size='small' label="Salaire" type='text' name="salaire" value={employeeInfo.salaire} onChange={handleChange} />
           <div>
@@ -142,8 +165,10 @@ function App() {
       </Dialog>
 
       <Dialog size="md" open={mod} onClose={() => setMod(false)}>
+        
         <DialogContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '10px', justifyContent: 'space-around' }}>
-          <TextField style={{ marginBottom: '15px' }} size='small' label="New name" type='text' name='newName' value={employeeNewInfo.newName} onChange={handleChange2} />
+          <h4 style={{textAlign:'center', marginBottom:'15px'}}>Edit employee</h4>
+          <TextField style={{ marginBottom: '15px' }} size='small' label="New name" type='text' name='newName' value={startCase(employeeNewInfo.newName)} onChange={handleChange2} />
           <TextField style={{ marginBottom: '15px' }} size='small' label="New salary" type='text' name='newSalaire' value={employeeNewInfo.newSalaire} onChange={handleChange2} />
           <div>
             <Button style={{ margin: '10px' }} color='success' variant="contained" onClick={modifyE}>
@@ -156,7 +181,7 @@ function App() {
         </DialogContent>
       </Dialog>
 
-      <h1>
+      <h1 style={{textAlign:'center'}}>
         Salary Management
       </h1>
 
@@ -202,7 +227,7 @@ function App() {
               filteredMessage.map((m) => (
                 <tr key={m.id_employee}>
                   <td>{m.id_employee}</td>
-                  <td>{m.nom_employee}</td>
+                  <td>{startCase(m.nom_employee)}</td>
                   <td>{m.salaire_employee} Ar</td>
                   <td>{m.salaire_employee < 1000 ? "Mediocre" : m.salaire_employee > 5000 ? "Grand" : "Moyen"}</td>
                   <td>
@@ -210,7 +235,7 @@ function App() {
                       <strong>Edit</strong>
                     </Button>
 
-                    <Button startIcon={<DeleteForeverIcon />} style={{ width: '100px', margin: '0 10px' }} variant="outlined" color="error" onClick={() => deleteE(m.id_employee)}>
+                    <Button startIcon={<DeleteForeverIcon />} style={{ width: '100px', margin: '0 10px' }} variant="outlined" color="error" onClick={()=>{setConfirmDel(true); setIdDel(m.id_employee)}}>
                       <strong>Delete</strong>
                     </Button>
 
@@ -226,7 +251,7 @@ function App() {
         <p><b>Salaire minimal: </b>{salaires.min} Ar</p>
         <p><b>Salaire maximal: </b>{salaires.max} Ar</p>
       </div>
-      <ToastContainer />
+      <ToastContainer style={{fontSize:'12px'}} />
 
     </>
   );
