@@ -9,10 +9,12 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SearchIcon from '@mui/icons-material/Search';
 import { startCase } from 'lodash';
+import {DataGrid} from '@mui/x-data-grid'
 
 function App() {
   const [message, setMessage] = useState([]);
   const [filteredMessage, setFilteredMessage] = useState([]);
+
 
   const listE = async () => {
     const response = await axios.get('http://localhost:5000/listEmployees');
@@ -251,8 +253,7 @@ function App() {
         <p><b>Salaire minimal: </b>{salaires.min} Ar</p>
         <p><b>Salaire maximal: </b>{salaires.max} Ar</p>
       </div>
-      <ToastContainer style={{fontSize:'12px'}} />
-
+      <ToastContainer style={{fontSize:'12px'}} />     
     </>
   );
 }
